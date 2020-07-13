@@ -5,21 +5,26 @@ import 'slick-carousel';
 window.jQuery = $;
 
 $(document).ready(function(){
+    // hamburger button mobile nav
     $('.js-accordion dt, .js-toggle').on('click tap', function(){
         $($(this).data('target') ? $(this).data('target') : $(this)).toggleClass('active');
     });
 
+    // activate menu section of hash in url on faq page
+    // todo: update url hash on scroll
     if (document.querySelector(".page-faq")) {
         const { hash } = window.location;
         hash && $(hash).parent() && $(hash).parent().addClass("active");
     }
 
+    // activate entry that was clicked and remove from siblings on faq page
     $('.js-menu .js-scroll-navigate a').on('click tap', function(){
         $(this).parents('.js-menu').first().removeClass('active');
         $(this).parents('.js-menu').first().find('a').removeClass('active');
         $(this).addClass('active');
     });
 
+    // activate side menu on faq page during scroll
     const anchors = Array.from(document.querySelectorAll('.js-anchor'));
     const menu = document.querySelector('.js-scroll-navigate');
 
@@ -48,6 +53,7 @@ $(document).ready(function(){
     const throttledHandleScrollFAQMenu = throttle(handleScrollFAQMenu, 500)
     document.addEventListener('scroll', throttledHandleScrollFAQMenu)
 
+    // slick slider
     $('.js-slider').slick({
         dots: true,
         infinite: true,
@@ -62,6 +68,8 @@ $(document).ready(function(){
             }
         }]
     });
+
+    // sticky overlay for app stores
     if ($('.js-section-sticky').index() >= 0){
         const autoHideSticky = function(){
             const top = $(document).scrollTop(),

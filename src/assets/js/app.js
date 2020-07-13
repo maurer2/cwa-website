@@ -19,11 +19,26 @@ $(document).ready(function(){
         targetElement.classList.toggle('active')
     })
 
-    // activate menu section of hash in url on faq page
+    // activate main content section of hash in url on faq page
     // todo: update url hash on scroll
-    if (document.querySelector(".page-faq")) {
+    if (document.querySelector('.page-faq')) {
         const { hash } = window.location;
-        hash && $(hash).parent() && $(hash).parent().addClass("active");
+        const headlines = Array.from(document.querySelectorAll('.headline'))
+
+        if (!headlines.length) {
+            return
+        }
+
+        const activeHeadline = headlines.filter((element) => `#${element.id}` === hash)
+        const inActiveHeadlines = headlines.filter((element) => `#${element.id}` !== hash)
+
+        // temp
+        // activeHeadline.forEach((element) => {
+            // element.style['scroll-padding-top'] = '40px'
+        // })
+
+        inActiveHeadlines.forEach((element) => { element.classList.remove('active') })
+        activeHeadline.forEach((element) => { element.classList.add('active') })
     }
 
     // activate entry that was clicked and remove from siblings on faq page

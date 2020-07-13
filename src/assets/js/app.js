@@ -6,9 +6,18 @@ window.jQuery = $;
 
 $(document).ready(function(){
     // hamburger button mobile nav
-    $('.js-accordion dt, .js-toggle').on('click tap', function(){
-        $($(this).data('target') ? $(this).data('target') : $(this)).toggleClass('active');
-    });
+    document.addEventListener('click', (event) => {
+        const element = event.target
+
+        const targetSelector = element.dataset.target
+        const targetElement = document.querySelector(targetSelector)
+
+        if (!targetElement) {
+            return
+        }
+
+        targetElement.classList.toggle('active')
+    })
 
     // activate menu section of hash in url on faq page
     // todo: update url hash on scroll

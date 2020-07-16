@@ -43,7 +43,7 @@ $(document).ready(function(){
         // scroll overlay in bottom of page for app stores
         if (document.querySelector('.js-section-sticky')){
             const autoHideSticky = function(){
-                const top = document.body.scrollTop
+                const top = window.scrollY
                 const maxTop = window.innerHeight / 4;
 
                 const stickySection = document.querySelector('.js-section-sticky')

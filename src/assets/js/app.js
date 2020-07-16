@@ -5,8 +5,11 @@ import 'slick-carousel';
 window.jQuery = $;
 
 $(document).ready(function(){
-    // hamburger button mobile nav
-    document.addEventListener('click', (event) => {
+    const isHomepage = document.body.classList.contains('page-home')
+    const isFaqPage = document.body.classList.contains('page-faq')
+
+    // hamburger menu mobile nav on every page
+    document.querySelector('.header').addEventListener('click', (event) => {
         const element = event.target
 
         const targetSelector = element.dataset.target
@@ -19,9 +22,54 @@ $(document).ready(function(){
         targetElement.classList.toggle('active')
     })
 
-    // activate main content section of hash in url on faq page
-    // todo: update url hash on scroll
-    if (document.body.classList.contains('page-faq')) {
+    // homepage
+    if (isHomepage) {
+        // slick slider - requires jQuery
+        $('.js-slider').slick({
+            dots: true,
+            infinite: true,
+            speed: 300,
+            slidesToShow: 2,
+            slidesToScroll: 1,
+            responsive: [{
+                breakpoint : 768,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            }]
+        });
+
+        // scroll overlay in bottom of page for app stores
+        if (document.querySelector('.js-section-sticky')){
+            const autoHideSticky = function(){
+                const top = $(document).scrollTop(),
+                    maxTop = $(window).height() / 4;
+                if ($('.js-section-sticky').hasClass('invisible')) {
+                    if (top < maxTop) {
+                        $('.js-section-sticky').removeClass('invisible');
+                    }
+                } else {
+                    if (top > maxTop) {
+                        $('.js-section-sticky').addClass('invisible');
+                    }
+                }
+            }
+            const throttledAutoHideSticky = throttle(autoHideSticky, 500)
+
+            document.addEventListener('scroll', throttledAutoHideSticky)
+
+            $('.js-section-close').on('click tap', function(){
+                $(this).parents('section').first().addClass('hidden');
+                $(document).off('scroll', throttledAutoHideSticky);
+            });
+            $('.js-section-sticky').removeClass('hidden');
+        }
+    }
+
+    // faq
+    if (isFaqPage) {
+        // activate main content section of hash in url on faq page
         const { hash } = window.location;
         const headlines = Array.from(document.querySelectorAll('.headline'))
 
@@ -34,10 +82,8 @@ $(document).ready(function(){
 
         inActiveHeadlines.forEach((element) => element.classList.remove('active'))
         activeHeadline.forEach((element) => element.classList.add('active'))
-    }
 
-    // activate entry that was clicked and remove from siblings on faq page
-    if (document.body.classList.contains('page-faq')) {
+        // activate entry that was clicked and remove active class from siblings
         const sidebarMenu = document.querySelector('.js-menu .js-scroll-navigate')
         const sidebarMenuEntries = Array.from(document.querySelectorAll('.js-menu .nav-link'))
 
@@ -51,75 +97,34 @@ $(document).ready(function(){
                 }
             })
         }
-    }
 
-    // activate side menu on faq page during scroll
-    const anchors = Array.from(document.querySelectorAll('.js-anchor'));
-    const menu = document.querySelector('.js-scroll-navigate');
+        // activate side menu during scroll
+        const anchors = Array.from(document.querySelectorAll('.js-anchor'));
+        const menu = document.querySelector('.js-scroll-navigate');
 
-    const handleScrollFAQMenu = function() {
-        if (!anchors.length) {
-            return
-        }
-
-        const negativeOffsets = anchors
-            .map((anchor) => Math.floor(anchor.getBoundingClientRect().top))
-            .filter(offset => offset <= 0);
-        const current = negativeOffsets.indexOf(Math.max(...negativeOffsets));
-
-        if (current >= 0) {
-            const hash = '#' + anchors[current].id;
-
-            const oldItem = menu.querySelector('a.active');
-            const newItem = menu.querySelector('a[href="' + hash + '"]');
-
-            if (newItem !== null && oldItem !== null) {
-                oldItem.classList.remove('active');
-                newItem.classList.add('active');
+        const handleScrollFAQMenu = function() {
+            if (!anchors.length) {
+                return
             }
-        }
-    };
-    const throttledHandleScrollFAQMenu = throttle(handleScrollFAQMenu, 500)
-    document.addEventListener('scroll', throttledHandleScrollFAQMenu)
 
-    // slick slider
-    $('.js-slider').slick({
-        dots: true,
-        infinite: true,
-        speed: 300,
-        slidesToShow: 2,
-        slidesToScroll: 1,
-        responsive: [{
-            breakpoint : 768,
-            settings: {
-                slidesToShow: 1,
-                slidesToScroll: 1
-            }
-        }]
-    });
+            const negativeOffsets = anchors
+                .map((anchor) => Math.floor(anchor.getBoundingClientRect().top))
+                .filter(offset => offset <= 0);
+            const current = negativeOffsets.indexOf(Math.max(...negativeOffsets));
 
-    // sticky overlay for app stores
-    if ($('.js-section-sticky').index() >= 0){
-        const autoHideSticky = function(){
-            const top = $(document).scrollTop(),
-                maxTop = $(window).height() / 4;
-            if ($('.js-section-sticky').hasClass('invisible')) {
-                if (top < maxTop) {
-                    $('.js-section-sticky').removeClass('invisible');
-                }
-            } else {
-                if (top > maxTop) {
-                    $('.js-section-sticky').addClass('invisible');
+            if (current >= 0) {
+                const hash = '#' + anchors[current].id;
+
+                const oldItem = menu.querySelector('a.active');
+                const newItem = menu.querySelector('a[href="' + hash + '"]');
+
+                if (newItem !== null && oldItem !== null) {
+                    oldItem.classList.remove('active');
+                    newItem.classList.add('active');
                 }
             }
-        }
-        const throttledAutoHideSticky = throttle(autoHideSticky, 500)
-        document.addEventListener('scroll', throttledAutoHideSticky)
-
-        $('.js-section-close').on('click tap', function(){
-            $(this).parents('section').first().addClass('hidden');
-            $(document).off('scroll', throttledAutoHideSticky);
-        });
-        $('.js-section-sticky').removeClass('hidden');
+        };
+        const throttledHandleScrollFAQMenu = throttle(handleScrollFAQMenu, 500)
+        document.addEventListener('scroll', throttledHandleScrollFAQMenu)
     }
 });

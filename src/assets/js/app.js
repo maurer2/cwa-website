@@ -21,7 +21,7 @@ $(document).ready(function(){
 
     // activate main content section of hash in url on faq page
     // todo: update url hash on scroll
-    if (document.querySelector('.page-faq')) {
+    if (document.body.classList.contains('page-faq')) {
         const { hash } = window.location;
         const headlines = Array.from(document.querySelectorAll('.headline'))
 
@@ -32,21 +32,28 @@ $(document).ready(function(){
         const activeHeadline = headlines.filter((element) => `#${element.id}` === hash)
         const inActiveHeadlines = headlines.filter((element) => `#${element.id}` !== hash)
 
-        // temp
-        // activeHeadline.forEach((element) => {
-            // element.style['scroll-padding-top'] = '40px'
-        // })
-
-        inActiveHeadlines.forEach((element) => { element.classList.remove('active') })
-        activeHeadline.forEach((element) => { element.classList.add('active') })
+        inActiveHeadlines.forEach((element) => element.classList.remove('active'))
+        activeHeadline.forEach((element) => element.classList.add('active'))
     }
 
     // activate entry that was clicked and remove from siblings on faq page
-    $('.js-menu .js-scroll-navigate a').on('click tap', function(){
-        $(this).parents('.js-menu').first().removeClass('active');
-        $(this).parents('.js-menu').first().find('a').removeClass('active');
-        $(this).addClass('active');
-    });
+    if (document.body.classList.contains('page-faq')) {
+        const sidebarMenu = document.querySelector('.js-menu .js-scroll-navigate')
+        const sidebarMenuEntries = Array.from(document.querySelectorAll('.js-menu .nav-link'))
+
+        if (!sidebarMenu || !sidebarMenuEntries) {
+            return
+        }
+
+        sidebarMenu.addEventListener('click', (event) => {
+            const element = event.target
+
+            if (element.matches('.js-menu .nav-link')) {
+                sidebarMenuEntries.forEach((element) => element.classList.remove('active'))
+                element.classList.add('active')
+            }
+        })
+    }
 
     // activate side menu on faq page during scroll
     const anchors = Array.from(document.querySelectorAll('.js-anchor'));

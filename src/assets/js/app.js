@@ -43,15 +43,18 @@ $(document).ready(function(){
         // scroll overlay in bottom of page for app stores
         if (document.querySelector('.js-section-sticky')){
             const autoHideSticky = function(){
-                const top = $(document).scrollTop(),
-                    maxTop = $(window).height() / 4;
-                if ($('.js-section-sticky').hasClass('invisible')) {
+                const top = document.body.scrollTop
+                const maxTop = window.innerHeight / 4;
+
+                const stickySection = document.querySelector('.js-section-sticky')
+
+                if (stickySection.classList.contains('invisible')) {
                     if (top < maxTop) {
-                        $('.js-section-sticky').removeClass('invisible');
+                        stickySection.classList.remove('invisible');
                     }
                 } else {
                     if (top > maxTop) {
-                        $('.js-section-sticky').addClass('invisible');
+                        stickySection.classList.add('invisible');
                     }
                 }
             }
@@ -67,7 +70,7 @@ $(document).ready(function(){
         }
     }
 
-    // faq
+    // faq page
     if (isFaqPage) {
         // activate main content section of hash in url on faq page
         const { hash } = window.location;

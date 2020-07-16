@@ -41,18 +41,16 @@ $(document).ready(function(){
         const sidebarMenu = document.querySelector('.js-menu .js-scroll-navigate')
         const sidebarMenuEntries = Array.from(document.querySelectorAll('.js-menu .nav-link'))
 
-        if (!sidebarMenu || !sidebarMenuEntries) {
-            return
+        if (!!sidebarMenu || !!sidebarMenuEntries) {
+            sidebarMenu.addEventListener('click', (event) => {
+                const element = event.target
+
+                if (element.matches('.js-menu .nav-link')) {
+                    sidebarMenuEntries.forEach((element) => element.classList.remove('active'))
+                    element.classList.add('active')
+                }
+            })
         }
-
-        sidebarMenu.addEventListener('click', (event) => {
-            const element = event.target
-
-            if (element.matches('.js-menu .nav-link')) {
-                sidebarMenuEntries.forEach((element) => element.classList.remove('active'))
-                element.classList.add('active')
-            }
-        })
     }
 
     // activate side menu on faq page during scroll

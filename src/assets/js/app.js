@@ -24,8 +24,12 @@ $(document).ready(function(){
 
     // homepage
     if (isHomepage) {
+        const slider = $('.js-slider')
+        const stickySection = document.querySelector('.js-section-sticky')
+        const stickyClose = document.querySelector('.js-section-close')
+
         // slick slider - requires jQuery
-        $('.js-slider').slick({
+        slider.slick({
             dots: true,
             infinite: true,
             speed: 300,
@@ -41,12 +45,10 @@ $(document).ready(function(){
         });
 
         // scroll overlay in bottom of page for app stores
-        if (document.querySelector('.js-section-sticky')){
+        if (stickySection){
             const autoHideSticky = function(){
                 const top = window.scrollY
                 const maxTop = window.innerHeight / 4;
-
-                const stickySection = document.querySelector('.js-section-sticky')
 
                 if (stickySection.classList.contains('invisible')) {
                     if (top < maxTop) {
@@ -62,11 +64,19 @@ $(document).ready(function(){
 
             document.addEventListener('scroll', throttledAutoHideSticky)
 
-            $('.js-section-close').on('click tap', function(){
-                $(this).parents('section').first().addClass('hidden');
-                $(document).off('scroll', throttledAutoHideSticky);
+            stickyClose.addEventListener('click', () => {
+                /*
+                document.addEventListener('transitionend', () => {
+                    stickySection.classList.remove('hidden');
+                })
+                */
+
+                document.removeEventListener('scroll', throttledAutoHideSticky)
+
+                stickySection.classList.add('hidden');
             });
-            $('.js-section-sticky').removeClass('hidden');
+
+            stickySection.classList.remove('hidden');
         }
     }
 

@@ -8,27 +8,62 @@ $(document).ready(function(){
     const isHomepage = document.body.classList.contains('page-home')
     const isFaqPage = document.body.classList.contains('page-faq')
 
-    // hamburger menu mobile nav on every page
-    document.querySelector('.header').addEventListener('click', (event) => {
-        const element = event.target
+    // todo
+    $('.js-accordion dt').on('click tap', function(){
+        $($(this).data('target') ? $(this).data('target') : $(this)).toggleClass('active');
+    });
 
-        const targetSelector = element.dataset.target
-        const targetElement = document.querySelector(targetSelector)
+    // activate main content section of hash in url on faq page
+    if (isFaqPage) {
+        const { hash } = window.location;
+        const headlines = Array.from(document.querySelectorAll('.headline'))
 
-        if (!targetElement) {
+        if (!headlines.length) {
             return
         }
 
-        targetElement.classList.toggle('active')
-    })
+        const activeHeadline = headlines.filter((element) => `#${element.id}` === hash)
+        const inActiveHeadlines = headlines.filter((element) => `#${element.id}` !== hash)
 
-    // homepage
+        inActiveHeadlines.forEach((element) => element.classList.remove('active'))
+        activeHeadline.forEach((element) => element.classList.add('active'))
+    }
+
+    // activate side menu during scroll
+    if (isFaqPage) {
+        const anchors = Array.from(document.querySelectorAll('.js-anchor'));
+        const menu = document.querySelector('.js-scroll-navigate');
+
+        const handleScrollFAQMenu = function() {
+            if (!anchors.length) {
+                return
+            }
+
+            const negativeOffsets = anchors
+                .map((anchor) => Math.floor(anchor.getBoundingClientRect().top))
+                .filter(offset => offset <= 0);
+            const current = negativeOffsets.indexOf(Math.max(...negativeOffsets));
+
+            if (current >= 0) {
+                const hash = '#' + anchors[current].id;
+
+                const oldItem = menu.querySelector('a.active');
+                const newItem = menu.querySelector('a[href="' + hash + '"]');
+
+                if (newItem !== null && oldItem !== null) {
+                    oldItem.classList.remove('active');
+                    newItem.classList.add('active');
+                }
+            }
+        };
+        const throttledHandleScrollFAQMenu = throttle(handleScrollFAQMenu, 500)
+        document.addEventListener('scroll', throttledHandleScrollFAQMenu)
+    }
+
+    // slick slider - requires jQuery
     if (isHomepage) {
         const slider = $('.js-slider')
-        const stickySection = document.querySelector('.js-section-sticky')
-        const stickyClose = document.querySelector('.js-section-close')
 
-        // slick slider - requires jQuery
         slider.slick({
             dots: true,
             infinite: true,
@@ -43,8 +78,13 @@ $(document).ready(function(){
                 }
             }]
         });
+    }
 
-        // scroll overlay in bottom of page for app stores
+    // scroll overlay in bottom of page for app stores
+    if (isHomepage) {
+        const stickySection = document.querySelector('.js-section-sticky')
+        const stickyClose = document.querySelector('.js-section-close')
+
         if (stickySection){
             const autoHideSticky = function(){
                 const top = window.scrollY
@@ -80,52 +120,22 @@ $(document).ready(function(){
         }
     }
 
-    // faq page
-    if (isFaqPage) {
-        // activate main content section of hash in url on faq page
-        const { hash } = window.location;
-        const headlines = Array.from(document.querySelectorAll('.headline'))
+    // hamburger menu mobile nav on every page
+    document.querySelector('.header').addEventListener('click', (event) => {
+        const element = event.target
 
-        if (!headlines.length) {
+        const targetSelector = element.dataset.target
+        const targetElement = document.querySelector(targetSelector)
+
+        if (!targetElement) {
             return
         }
 
-        const activeHeadline = headlines.filter((element) => `#${element.id}` === hash)
-        const inActiveHeadlines = headlines.filter((element) => `#${element.id}` !== hash)
+        targetElement.classList.toggle('active')
+    })
 
-        inActiveHeadlines.forEach((element) => element.classList.remove('active'))
-        activeHeadline.forEach((element) => element.classList.add('active'))
-
-        // activate side menu during scroll
-        const anchors = Array.from(document.querySelectorAll('.js-anchor'));
-        const menu = document.querySelector('.js-scroll-navigate');
-
-        const handleScrollFAQMenu = function() {
-            if (!anchors.length) {
-                return
-            }
-
-            const negativeOffsets = anchors
-                .map((anchor) => Math.floor(anchor.getBoundingClientRect().top))
-                .filter(offset => offset <= 0);
-            const current = negativeOffsets.indexOf(Math.max(...negativeOffsets));
-
-            if (current >= 0) {
-                const hash = '#' + anchors[current].id;
-
-                const oldItem = menu.querySelector('a.active');
-                const newItem = menu.querySelector('a[href="' + hash + '"]');
-
-                if (newItem !== null && oldItem !== null) {
-                    oldItem.classList.remove('active');
-                    newItem.classList.add('active');
-                }
-            }
-        };
-        const throttledHandleScrollFAQMenu = throttle(handleScrollFAQMenu, 500)
-        document.addEventListener('scroll', throttledHandleScrollFAQMenu)
-
-        // function to update the faq list for a given searchString
+    // function to update the faq list for a given searchString
+    if (isFaqPage) {
         const updateResults = function(searchString, faq) {
             // result are two arrays, the elements to hide and the ones to show
             const hide = [];

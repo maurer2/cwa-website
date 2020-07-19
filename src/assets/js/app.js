@@ -8,10 +8,19 @@ $(document).ready(function(){
     const isHomepage = document.body.classList.contains('page-home')
     const isFaqPage = document.body.classList.contains('page-faq')
 
-    // todo
-    $('.js-accordion dt').on('click tap', function(){
-        $($(this).data('target') ? $(this).data('target') : $(this)).toggleClass('active');
-    });
+    // hamburger menu mobile nav on every page
+    document.querySelector('.header').addEventListener('click', (event) => {
+        const element = event.target
+
+        const targetSelector = element.dataset.target
+        const targetElement = document.querySelector(targetSelector)
+
+        if (!targetElement) {
+            return
+        }
+
+        targetElement.classList.toggle('active')
+    })
 
     // activate main content section of hash in url on faq page
     if (isFaqPage) {
@@ -105,34 +114,13 @@ $(document).ready(function(){
             document.addEventListener('scroll', throttledAutoHideSticky)
 
             stickyClose.addEventListener('click', () => {
-                /*
-                document.addEventListener('transitionend', () => {
-                    stickySection.classList.remove('hidden');
-                })
-                */
-
                 document.removeEventListener('scroll', throttledAutoHideSticky)
-
                 stickySection.classList.add('hidden');
             });
 
             stickySection.classList.remove('hidden');
         }
     }
-
-    // hamburger menu mobile nav on every page
-    document.querySelector('.header').addEventListener('click', (event) => {
-        const element = event.target
-
-        const targetSelector = element.dataset.target
-        const targetElement = document.querySelector(targetSelector)
-
-        if (!targetElement) {
-            return
-        }
-
-        targetElement.classList.toggle('active')
-    })
 
     // function to update the faq list for a given searchString
     if (isFaqPage) {
